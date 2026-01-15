@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # --- Cluster Node 1 ---
+  webz-001:
+    image: ubuntu:20.04
+    container_name: webz-001
+    hostname: webz-001
+    privileged: true
+    tty: true
+    dns: 8.8.8.8          # <--- התיקון: שימוש ב-DNS של גוגל
+    networks:
+      ha_network:
+        ipv4_address: 172.20.0.10
+
+  # --- Cluster Node 2 ---
+  webz-002:
+    image: ubuntu:20.04
+    container_name: webz-002
+    hostname: webz-002
+    privileged: true
+    tty: true
+    dns: 8.8.8.8          # <--- התיקון
+    networks:
+      ha_network:
+        ipv4_address: 172.20.0.11
+
+  # --- Cluster Node 3 ---
+  webz-003:
+    image: ubuntu:20.04
+    container_name: webz-003
+    hostname: webz-003
+    privileged: true
+    tty: true
+    dns: 8.8.8.8          # <--- התיקון
+    networks:
+      ha_network:
+        ipv4_address: 172.20.0.12
+
+  # --- Automation Server (Jenkins) ---
+  webz-004:
+    image: ubuntu:20.04
+    container_name: webz-004
+    hostname: webz-004
+    privileged: true
+    tty: true
+    ports:
+      - "8080:8080"
+    dns: 8.8.8.8          # <--- התיקון
+    volumes:
+      - ./jenkins_logs:/var/log/jenkins_task
+    networks:
+      ha_network:
+        ipv4_address: 172.20.0.13
+
+networks:
+  ha_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
